@@ -15,9 +15,10 @@ import { ChatMessage, MessageSender, MessageType } from '../models/chat-models';
 export class ChatbotComponent {
 
 
-  title = "Some Title"
+  title = "Chatables.ai Bot"
   // TODO: Add avatar URL
-  avatarURL = "/"
+  userAvatar = "assets/icons/usericon.png"
+  botAvatar =  "assets/icons/bot.png"
   maxMessagesWindow: any
   isChatEnabled: any
   termsAccepted: Boolean = false
@@ -62,7 +63,7 @@ export class ChatbotComponent {
       reply: true,
       user: {
         name: "You",
-        avatar: this.avatarURL,
+        avatar: this.userAvatar,
       },
     });
     this.isChatEnabled = false
@@ -79,7 +80,7 @@ export class ChatbotComponent {
         reply: false,
         user: {
           name: "Chatables.ai",
-          avatar: "this.currentPrompt.avatarURL",
+          avatar: "botAvatar",
         },
       },
     );
