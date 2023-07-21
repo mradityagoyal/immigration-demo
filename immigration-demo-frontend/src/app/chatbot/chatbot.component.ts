@@ -22,6 +22,7 @@ export class ChatbotComponent {
   isChatEnabled: any
   termsAccepted: Boolean = false
   messages: NebularChatMessage[] = [];
+  needNewBotMsg = true;
 
   private socketSubscription: Subscription | undefined;
 
@@ -34,10 +35,13 @@ export class ChatbotComponent {
         // console.log(`Message Received in component.ts: ${receivedMsg}`)
         // console.log(`receviedMsg.type: ${receivedMsg.type}`)
         if (receivedMsg.type === MessageType.STREAM_MSG) {
-            this.composeBotReply(receivedMsg.message)
+          if(this.needNewBotMsg){
+            this.createBotReply("")
+          }
+            this.updateBotReply(receivedMsg.message)
         } else if (receivedMsg.type == MessageType.STREAM_END) {
             this.isChatEnabled = true
-            //TODO: do something else too? 
+          this.needNewBotMsg = true;
         }
         else if (receivedMsg.type == MessageType.COMMAND) {
             //TODO: change format of this command message. 
@@ -67,18 +71,23 @@ export class ChatbotComponent {
 
 
 
-  composeBotReply(botMsg: string) {
+  createBotReply(botMsg: string) {
     this.messages.push(
       {
         text: botMsg,
         date: new Date(),
         reply: false,
         user: {
-          name: "this.currentPrompt.title",
+          name: "Chatables.ai",
           avatar: "this.currentPrompt.avatarURL",
         },
       },
     );
+    this.needNewBotMsg = false;
+  }
+
+  updateBotReply(botMsg: string) {
+    this.messages[this.messages.length -1].text += botMsg
   }
 
 }
