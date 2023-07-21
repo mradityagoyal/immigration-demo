@@ -1,5 +1,10 @@
 import { Component } from '@angular/core';
 import { NebularChatMessage } from 'src/app/models/nebular-chat-message.model';
+import { ChatService } from '../services/chatbot.service';
+import { EventService } from '../services/bot-event.service';
+import { Subscription } from 'rxjs';
+import { ChatMessage, MessageSender, MessageType } from '../models/chat-models';
+
 
 
 @Component({
@@ -9,20 +14,42 @@ import { NebularChatMessage } from 'src/app/models/nebular-chat-message.model';
 })
 export class ChatbotComponent {
 
+
   title = "Some Title"
-  isLoggedUser = false
-  loggedUser = {displayName : "Hi", avatarURL : "/"}
-  openaiKey: any
-  botResponse: any
+  // TODO: Add avatar URL
+  avatarURL = "/"
   maxMessagesWindow: any
   isChatEnabled: any
   termsAccepted: Boolean = false
   messages: NebularChatMessage[] = [];
 
-  constructor(
-  ) {
-    console.log("constructed")
-  }
+  private socketSubscription: Subscription | undefined;
+
+
+  constructor(private chatService: ChatService, private eventService: EventService) { }
+
+  ngOnInit() {
+    // default chatbot welcome message
+    this.socketSubscription = this.chatService.getMessages().subscribe((receivedMsg: ChatMessage) => {
+        // console.log(`Message Received in component.ts: ${receivedMsg}`)
+        // console.log(`receviedMsg.type: ${receivedMsg.type}`)
+        if (receivedMsg.type === MessageType.STREAM_MSG) {
+            this.composeBotReply(receivedMsg.message)
+        } else if (receivedMsg.type == MessageType.STREAM_END) {
+            this.isChatEnabled = true
+            //TODO: do something else too? 
+        }
+        else if (receivedMsg.type == MessageType.COMMAND) {
+            //TODO: change format of this command message. 
+            // console.log(`emiting event: ${receivedMsg}`)
+            this.eventService.emitEvent(receivedMsg.message)
+        }
+        else if (receivedMsg.type == MessageType.QUICK_ACTION) {
+          console.log("not implemented yet")
+            // this.updateQuickActions(receivedMsg.message)
+        }
+    });
+}
 
   userSendMessage(event: { message: any; }) {
     this.messages.push({
@@ -30,38 +57,20 @@ export class ChatbotComponent {
       date: new Date(),
       reply: true,
       user: {
-        name: this.loggedUser.displayName,
-        avatar: this.loggedUser.avatarURL,
+        name: "You",
+        avatar: this.avatarURL,
       },
     });
     this.isChatEnabled = false
-    this.getBotReply()
+    this.chatService.sendMessage(event.message);
   }
 
-  getBotReply() {
-    console.log("click")
-    this.botResponse = "hardcoded string"
-    this.composeBotReply()
 
-    // this.openaiService.postChatMessage(this.openaiKey, this.currentPrompt, this.loggedUser, this.messages.slice(this.maxMessagesWindow))
-    //   .subscribe(
-    //     data => {
-    //       console.log("Success", data)
-    //       this.botResponse = data
-    //       this.composeBotReply()
-    //     },
-    //     error => {
-    //       console.log("Success", error)
-    //       this.botResponse = error
-    //       this.composeBotReply()
-    //     }
-    //   )
-  }
 
-  composeBotReply() {
+  composeBotReply(botMsg: string) {
     this.messages.push(
       {
-        text: `${this.botResponse}`,
+        text: botMsg,
         date: new Date(),
         reply: false,
         user: {
@@ -70,7 +79,6 @@ export class ChatbotComponent {
         },
       },
     );
-    this.isChatEnabled = true
   }
 
 }
