@@ -7,12 +7,14 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NbEvaIconsModule } from '@nebular/eva-icons';
 import { ChatbotComponent } from './chatbot/chatbot.component';
 import { NbThemeModule, NbLayoutModule, NbMenuModule, NbCardModule, NbSidebarModule, NbTabsetModule, NbChatModule, NbButtonModule, NbToggleModule, NbInputModule, NbActionsModule, NbBadgeModule, NbListModule, NbAccordionModule, NbStepperModule, NbUserModule } from '@nebular/theme';
+import { FrameComponent } from './frame/frame.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    ChatbotComponent
+    ChatbotComponent,
+    FrameComponent
   ],
   imports: [
     BrowserModule,
