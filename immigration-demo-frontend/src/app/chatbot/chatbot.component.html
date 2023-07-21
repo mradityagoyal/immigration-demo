@@ -1,15 +1,15 @@
 <nb-chat size="giant" scrollBottom="true">
-    <ng-template nbChatTitle [context]="{ text: 'some text to pass into template' }" let-data>
-      {{ title }} 
-      <!-- <nb-icon nbButton icon="menu-2-outline"></nb-icon> -->
-    </ng-template>
-  
-    <nb-chat-message *ngFor="let msg of messages" [type]="msg.type" [message]="msg.text" [reply]="msg.reply"
-      [sender]="msg.user.name" [date]="msg.date" [files]="msg.files" [quote]="msg.quote" [latitude]="msg.latitude"
-      [longitude]="msg.longitude" [avatar]="msg.user.avatar">
-    </nb-chat-message>
-  
-    <nb-chat-form [showButton]="true" (send)="userSendMessage($event)" [dropFiles]="false"> </nb-chat-form>
-  
-  </nb-chat>
-  
+  <ng-template nbChatTitle [context]="{ text: 'some text to pass into template' }" let-data>
+    {{ title }}
+    <!-- <nb-icon nbButton icon="menu-2-outline"></nb-icon> -->
+  </ng-template>
+
+  <nb-chat-message *ngFor="let msg of messages" [type]="msg.type" [message]="msg.text" [reply]="msg.reply"
+    [sender]="msg.user.name" [date]="msg.date" [files]="msg.files" [quote]="msg.quote" [latitude]="msg.latitude"
+    [longitude]="msg.longitude" [avatar]="msg.user.avatar">
+    <div [innerHTML]="msg.text | markdown"></div>
+  </nb-chat-message>
+
+  <nb-chat-form [showButton]="true" (send)="userSendMessage($event)" [dropFiles]="false"> </nb-chat-form>
+
+</nb-chat>

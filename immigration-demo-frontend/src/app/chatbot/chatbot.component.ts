@@ -18,7 +18,7 @@ export class ChatbotComponent {
   title = "Chatables.ai Bot"
   // TODO: Add avatar URL
   userAvatar = "assets/icons/usericon.png"
-  botAvatar =  "assets/icons/bot.png"
+  botAvatar = "assets/icons/bot.png"
   maxMessagesWindow: any
   isChatEnabled: any
   termsAccepted: Boolean = false
@@ -33,28 +33,28 @@ export class ChatbotComponent {
   ngOnInit() {
     // default chatbot welcome message
     this.socketSubscription = this.chatService.getMessages().subscribe((receivedMsg: ChatMessage) => {
-        // console.log(`Message Received in component.ts: ${receivedMsg}`)
-        // console.log(`receviedMsg.type: ${receivedMsg.type}`)
-        if (receivedMsg.type === MessageType.STREAM_MSG) {
-          if(this.needNewBotMsg){
-            this.createBotReply("")
-          }
-            this.updateBotReply(receivedMsg.message)
-        } else if (receivedMsg.type == MessageType.STREAM_END) {
-            this.isChatEnabled = true
-          this.needNewBotMsg = true;
+      // console.log(`Message Received in component.ts: ${receivedMsg}`)
+      // console.log(`receviedMsg.type: ${receivedMsg.type}`)
+      if (receivedMsg.type === MessageType.STREAM_MSG) {
+        if (this.needNewBotMsg) {
+          this.createBotReply("")
         }
-        else if (receivedMsg.type == MessageType.COMMAND) {
-            //TODO: change format of this command message. 
-            // console.log(`emiting event: ${receivedMsg}`)
-            this.eventService.emitEvent(receivedMsg.message)
-        }
-        else if (receivedMsg.type == MessageType.QUICK_ACTION) {
-          console.log("not implemented yet")
-            // this.updateQuickActions(receivedMsg.message)
-        }
+        this.updateBotReply(receivedMsg.message)
+      } else if (receivedMsg.type == MessageType.STREAM_END) {
+        this.isChatEnabled = true
+        this.needNewBotMsg = true;
+      }
+      else if (receivedMsg.type == MessageType.COMMAND) {
+        //TODO: change format of this command message. 
+        // console.log(`emiting event: ${receivedMsg}`)
+        this.eventService.emitEvent(receivedMsg.message)
+      }
+      else if (receivedMsg.type == MessageType.QUICK_ACTION) {
+        console.log("not implemented yet")
+        // this.updateQuickActions(receivedMsg.message)
+      }
     });
-}
+  }
 
   userSendMessage(event: { message: any; }) {
     this.messages.push({
@@ -88,7 +88,7 @@ export class ChatbotComponent {
   }
 
   updateBotReply(botMsg: string) {
-    this.messages[this.messages.length -1].text += botMsg
+    this.messages[this.messages.length - 1].text += botMsg
   }
 
 }
