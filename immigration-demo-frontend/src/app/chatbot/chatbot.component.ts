@@ -80,7 +80,7 @@ export class ChatbotComponent {
         reply: false,
         user: {
           name: "Chatables.ai",
-          avatar: "botAvatar",
+          avatar: this.botAvatar,
         },
       },
     );
