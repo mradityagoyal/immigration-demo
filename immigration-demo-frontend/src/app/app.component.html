@@ -5,7 +5,7 @@
     <app-chatbot> </app-chatbot>
   </nb-layout-column>
 
-  <nb-layout-column >
+  <nb-layout-column *ngIf="showIframeComponent">
     <app-frame></app-frame>
   </nb-layout-column>
 
