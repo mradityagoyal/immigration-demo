@@ -53,13 +53,16 @@ Standalone question:"""
 HUMAN_MSG_TEMPLATE = """You are provided a "Question" from our users, some related content from our website as "Context" and previous chat history as "History".
 Context: {context}
 Question: {question}
-Provide an answer to the Question based on the context. Limit your answer to 300 words. 
-You should only use urls that are explicitly listed as a url in the context. Do NOT make up a URL that is not listed.
+Provide an answer to the Question based on the context. Limit your answer to 150 words. 
 If you don't know the answer, nudge the user for more information. Always be friendly and helpful.
 Answer in Markdown. Use bullets and headings to help clarify the content. """
+# TODO: Add markdown support later?
+# TODO: Check if URL instruction makes any sense. 
+# You should only use urls that are explicitly listed as a url in the context. Do NOT make up a URL that is not listed.
+
 
 system_message_prompt = SystemMessagePromptTemplate.from_template(
-    "You are an AI assistant for www.holthelaw.com . You provide helpful information on Canada Immigration related questions."
+    "You are an AI assistant for Holthe Law firm. You provide helpful information on Canada Immigration related questions."
 )
 human_message_prompt = HumanMessagePromptTemplate.from_template(HUMAN_MSG_TEMPLATE)
 
@@ -79,7 +82,6 @@ chatModel = ChatOpenAI(
 )
 
 
-# TODO: maybe simplify this method to take in less params
 def createChain(sid: str):
     """Create the langhcain chain."""
     chat_history = DynamoDBChatMessageHistory(
@@ -94,6 +96,8 @@ def createChain(sid: str):
         chat_memory=chat_history,
     )
 
+    # TODO: fix this chain type. should be conversationChain after that bug is fixed.
+    # https://github.com/hwchase17/langchain/pull/2515
     chain = LLMChain(
         llm=chatModel,
         prompt=chat_prompt,
@@ -110,8 +114,6 @@ async def generate_question(user_input: str, chat_history: str) -> str:
     prompt = PromptTemplate(
         template=CONDENSE_PROMPT, input_variables=["question", "chat_history"]
     )
-    # TODO: fix this chain type. should be conversationChain after that bug is fixed.
-    # https://github.com/hwchase17/langchain/pull/2515
     chain = LLMChain(llm=chatModel, prompt=prompt)
     res = await chain.arun(question=user_input, chat_history=chat_history)
     logging.info(f"Debug: ReInterpreted question: {res}")
