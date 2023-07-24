@@ -3,6 +3,8 @@ from langchain.vectorstores import VectorStore
 
 from langchain.chat_models import ChatOpenAI
 from dotenv import load_dotenv
+from langchain.memory.chat_message_histories import DynamoDBChatMessageHistory
+
 
 load_dotenv()  # Load environment variables from .env file
 
@@ -12,8 +14,9 @@ llm = chatModel = ChatOpenAI(
     temperature=0,
     streaming=True,
     verbose=True,
-    model_name = llm_name,
+    model_name=llm_name,
 )
+
 
 from langchain.prompts import PromptTemplate
 
@@ -28,15 +31,26 @@ QA_CHAIN_PROMPT = PromptTemplate(
 
 from langchain.memory import ConversationBufferMemory
 
-memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
+# memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
 
 
 from langchain.chains import ConversationalRetrievalChain
 
-
-
-def getQaChain(vectordb: VectorStore) -> ConversationalRetrievalChain:
+#TODO fix qustion generation issue. 
+# https://github.com/langchain-ai/langchain/discussions/5981
+def getQaChain(vectordb: VectorStore, sid: str) -> ConversationalRetrievalChain:
+    chat_history = DynamoDBChatMessageHistory(
+        table_name="SessionTable",
+        session_id=sid,
+    )
+    # TODO: limit the number of items in memory.
+    memoryDB = ConversationBufferMemory(
+        return_messages=True,
+        memory_key="chat_history",
+        # return_messages = True,
+        chat_memory=chat_history,
+    )
     qa = ConversationalRetrievalChain.from_llm(
-        llm, retriever=vectordb.as_retriever(), memory=memory, verbose=True
+        llm, retriever=vectordb.as_retriever(), memory=memoryDB, verbose=True
     )
     return qa

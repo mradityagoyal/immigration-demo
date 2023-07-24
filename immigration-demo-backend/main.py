@@ -105,7 +105,7 @@ async def chat(sid, data):
     #     callbacks=[StreamingLLMCallbackHandler(sid, sio)],
     # )
 
-    chain2: ConversationalRetrievalChain = getQaChain(vectorstore)
+    chain2: ConversationalRetrievalChain = getQaChain(vectorstore, sid)
 
     result = await chain2.acall({"question": cm.message},
         callbacks=[StreamingLLMCallbackHandler(sid, sio)],)
