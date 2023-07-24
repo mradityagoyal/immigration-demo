@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
+from ai.chat2 import getQaChain
 from ai.query import createChain, generate_question, queryDocs
 from langchain.chains import ConversationChain
 from callback import StreamingLLMCallbackHandler
@@ -19,6 +20,8 @@ import socketio
 import pickle
 from pathlib import Path
 from typing import Optional
+from langchain.chains import ConversationalRetrievalChain
+
 from langchain.vectorstores import VectorStore
 
 
@@ -83,24 +86,31 @@ async def chat(sid, data):
     except ValidationErr as e:
         logging.error(e)
     # TODO: Add chat history
-    reinterpretedQuestion = await generate_question(cm.message, "")
+    # reinterpretedQuestion = await generate_question(cm.message, "")
     # TODO: add number of docs fetched.
     # TODO: metadata from the fetched docs is thrown away. let's get URLs from there.
-    k = 2
-    docs = await queryDocs(reinterpretedQuestion, vectorstore, k)
+    # k = 2
+    # docs = await queryDocs(reinterpretedQuestion, vectorstore, k)
 
     # send command with URL of the related page.
-    command_msg = ChatMessage(
-        sender=MessageSender.AI, message=docs[0].metadata['url'], type=MessageType.COMMAND
-    )
-    await sio.emit("chat", command_msg.toJson(), room=sid)
+    # command_msg = ChatMessage(
+    #     sender=MessageSender.AI, message=docs[0].metadata['url'], type=MessageType.COMMAND
+    # )
+    # await sio.emit("chat", command_msg.toJson(), room=sid)
 
 
-    chain: ConversationChain = createChain(sid)
-    await chain.acall(
-        {"question": reinterpretedQuestion, "context": docs[0].page_content},
-        callbacks=[StreamingLLMCallbackHandler(sid, sio)],
-    )
+    # chain: ConversationChain = createChain(sid)
+    # await chain.acall(
+    #     {"question": reinterpretedQuestion, "context": docs[0].page_content},
+    #     callbacks=[StreamingLLMCallbackHandler(sid, sio)],
+    # )
+
+    chain2: ConversationalRetrievalChain = getQaChain(vectorstore)
+
+    result = await chain2.acall({"question": cm.message},
+        callbacks=[StreamingLLMCallbackHandler(sid, sio)],)
+    
+    logging.info(f"*********---- Result: {result['answer']}")
     # logging.info("Chain complete. ")
     end_resp = ChatMessage(
         sender=MessageSender.AI, message="", type=MessageType.STREAM_END
