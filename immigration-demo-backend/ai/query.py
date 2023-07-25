@@ -53,7 +53,7 @@ Standalone question:"""
 HUMAN_MSG_TEMPLATE = """You are provided a "Question" from our users, some related content from our website as "Context" and previous chat history as "History".
 Context: {context}
 Question: {question}
-Provide an answer to the Question based on the context. Limit your answer to 300 words. 
+Provide an answer to the Question based on the context. Limit your answer to 150 words. 
 You should only use urls that are explicitly listed as a url in the context. Do NOT make up a URL that is not listed.
 If you don't know the answer, nudge the user for more information. Always be friendly and helpful.
 Answer in Markdown. Use bullets and headings to help clarify the content. """
