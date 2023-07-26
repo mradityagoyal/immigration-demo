@@ -59,7 +59,7 @@ If you don't know the answer, nudge the user for more information. Always be fri
 Answer in Markdown. Use bullets and headings to help clarify the content. """
 
 system_message_prompt = SystemMessagePromptTemplate.from_template(
-    "You are an AI assistant for www.holthelaw.com . You provide helpful information on Canada Immigration related questions."
+    """You are an AI assistant for "Holthe Law firm". You provide helpful information on Canada Immigration related questions."""
 )
 human_message_prompt = HumanMessagePromptTemplate.from_template(HUMAN_MSG_TEMPLATE)
 
